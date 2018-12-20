@@ -21,7 +21,7 @@ void yyerror(char *s);
 %type <node> Statements StatementList Statement
 %type <node> Expressions ExpressionList Expression
 
-%left Laccess, Lbrace
+%left Laccess Lbrace
 %right '='
 %left '.'
 %left '*'

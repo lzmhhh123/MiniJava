@@ -11,7 +11,7 @@ void yyerror(char *s);
 %token <node> Class Public Static Void Main If Else While Extends
 %token <node> Integer Boolean String True False Id IntegerIteral
 %token <node> And This New Println Length Return 
-%token <node> Lbrace Rbrace Laccess Raccess LBracket RBracket
+%token <node> Lbrace Rbrace Raccess LBracket RBracket
 %token <node> Semicolon Comma
 %type <node> Goal MainClass ExtendOpt Identifier Type
 %type <node> ClassDeclarations ClassDeclarationList ClassDeclaration
@@ -21,9 +21,11 @@ void yyerror(char *s);
 %type <node> Statements StatementList Statement
 %type <node> Expressions ExpressionList Expression
 
+%left Laccess
 %right '='
 %left '.'
-%left '+' '-' '*'
+%left '*'
+%left '+' '-'
 %left And '<'
 %right '!'
 

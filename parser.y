@@ -11,6 +11,8 @@ void yyerror(char *s);
 %token <node> Class Public Static Void Main If Else While Extends
 %token <node> Integer Boolean String True False Id IntegerIteral
 %token <node> And This New Println Length Return 
+%token <node> Lbrace, Rbrace, Laccess, Raccess, LBracket, RBracket
+%token <node> Semicolon, Comma
 %type <node> Goal MainClass ExtendOpt Identifier
 %type <node> ClassDeclarations ClassDeclarationList ClassDeclaration
 %type <node> VarDeclarations VarDeclarationList VarDeclaration
@@ -37,7 +39,7 @@ Goal:
     ;
 
 MainClass:
-    Class Identifier '{' Public Static Void Main '(' String '[' ']' Identifier ')' '{' Statement '}' '}'
+    Class Identifier Lbrace Public Static Void Main LBracket String Laccess Raccess Identifier RBracket Lbrace Statement Rbrace Rbrace
     {
         $$ = new_node("MainClass", 17, $1, $2, $3, $4, $5,
                                        $6, $7, $8, $10, $11,
@@ -69,7 +71,7 @@ ClassDeclarations:
     ;
 
 ClassDeclaration:
-    Class Identifier ExtendOpt '{' VarDeclarations MethodDeclarations '}'
+    Class Identifier ExtendOpt Lbrace VarDeclarations MethodDeclarations Rbrace
     {
         $$ = new_node("ClassDeclaration", 7, $1, $2, $3, $4,
                                              $5, $6, $7);
@@ -110,7 +112,7 @@ VarDeclarationList:
     ;
 
 VarDeclaration:
-    Type Identifier ';'
+    Type Identifier Semicolon
     {
         $$ = new_node("VarDeclaration", 3, $1, $2, $3);
     }
@@ -139,7 +141,7 @@ MethodDeclarationList:
     ;
 
 MethodDeclaration:
-    Public Type Identifier '(' TypeIdentifiers ')' '{' VarDeclarations Statements '}' Return Expression ';' '}'
+    Public Type Identifier LBracket TypeIdentifiers RBracket Lbrace VarDeclarations Statements Rbrace Return Expression Semicolon Rbrace
     {
         $$ = new_node("MethodDeclaration", 14, $1, $2, $3, $4,
                                                $5, $6, $7, $7,
@@ -164,7 +166,7 @@ TypeIdentifierList:
     {
         $$ = new_node("TypeIdentifierList", 1, $1);
     }
-|   TypeIdentifierList ',' TypeIdentifier
+|   TypeIdentifierList Comma TypeIdentifier
     {
         $$ = new_node("TypeIdentifierList", 3, $1, $2, $3);
     }
@@ -204,7 +206,7 @@ Type:
     {
         $$ = new_node("Type", 1, $1);
     }
-|   Integer '[' ']'
+|   Integer Laccess Raccess
     {
         $$ = new_node("Type", 3, $1, $2, $3);
     }
@@ -219,30 +221,30 @@ Type:
     ;
 
 Statement:
-    '{' Statements '}'
+    Lbrace Statements Rbrace
     {
         $$ = new_node("Statement", 3, $1, $2, $3);
     }
-|   If '(' Expression ')' Statement Else Statement
+|   If LBracket Expression RBracket Statement Else Statement
     {
         $$ = new_node("Statement", 7, $1, $2, $3, $4,
                                       $5, $6, $7);
     }
-|   While '(' Expression ')' Statement
+|   While LBracket Expression RBracket Statement
     {
         $$ = new_node("Statement", 5, $1, $2, $3, $4,
                                       $5);
     }
-|   Println '(' Expression ')' ';'
+|   Println LBracket Expression RBracket Semicolon
     {
         $$ = new_node("Statement", 5, $1, $2, $3, $4,
                                       $5);
     }
-|   Identifier '=' Expression ';'
+|   Identifier '=' Expression Semicolon
     {
         $$ = new_node("Statement", 4, $1, $2, $3, $4);
     }
-|   Identifier '[' Expression ']' '=' Expression ';'
+|   Identifier Laccess Expression Raccess '=' Expression Semicolon
     {
         $$ = new_node("Statement", 7, $1, $2, $3, $4,
                                       $5, $6, $7);
@@ -265,7 +267,7 @@ ExpressionList:
     {
         $$ = new_node("ExpressionList", 1, $1);
     }
-|   ExpressionList ',' Expression
+|   ExpressionList Comma Expression
     {
         $$ = new_node("ExpressionList", 3, $1, $2, $3);
     }
@@ -292,7 +294,7 @@ Expression:
     {
         $$ = new_node("Expression", 3, $1, new_node("*", 0), $3);
     }
-|   Expression '[' Expression ']'
+|   Expression Laccess Expression Raccess
     {
         $$ = new_node("Expression", 4, $1, $2, $3, $4);
     }
@@ -300,7 +302,7 @@ Expression:
     {
         $$ = new_node("Expression", 3, $1, new_node(".", 0), $3);
     }
-|   Expression '.' Identifier '(' Expressions ')'
+|   Expression '.' Identifier LBracket Expressions RBracket
     {
         $$ = new_node("Expression", 6, $1, new_node("<", 0), $3.
                                        $4, $5, $6);
@@ -321,11 +323,11 @@ Expression:
     {
         $$ = new_node("Expression", 1, $1);
     }
-|   New Integer '[' Expression ']'
+|   New Integer Laccess Expression Raccess
     {
         $$ = new_node("Expression", 5, $1, $2, $3, $4, $5);
     }
-|   New Identifier '(' ')'
+|   New Identifier LBracket RBracket
     {
         $$ = new_node("Expression", 4, $1, $2, $3, $4);
     }
@@ -333,7 +335,7 @@ Expression:
     {
         $$ = new_node("Expression", 2, $1, $2);
     }
-|   '(' Expression ')'
+|   LBracket Expression RBracket
     {
         $$ = new_node("Expression", 3, $1, $2, $3);
     }

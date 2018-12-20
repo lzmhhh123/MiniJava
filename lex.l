@@ -68,14 +68,14 @@ int yylineno;
 "<"   { return '<'; }
 "!"   { return '!'; }
 
-"{"   { yylval.node = new_node(yytext, 0); return '{'; }
-"}"   { yylval.node = new_node(yytext, 0); return '}'; }
-"["   { yylval.node = new_node(yytext, 0); return '['; }
-"]"   { yylval.node = new_node(yytext, 0); return ']'; }
-"("   { yylval.node = new_node(yytext, 0); return '('; }
-")"   { yylval.node = new_node(yytext, 0); return ')'; }
-";"   { yylval.node = new_node(yytext, 0); return ';'; }
-","   { yylval.node = new_node(yytext, 0); return ','; }
+"{"   { yylval.node = new_node(yytext, 0); return Lbrace; }
+"}"   { yylval.node = new_node(yytext, 0); return Rbrace; }
+"["   { yylval.node = new_node(yytext, 0); return Laccess; }
+"]"   { yylval.node = new_node(yytext, 0); return Raccess; }
+"("   { yylval.node = new_node(yytext, 0); return LBracket; }
+")"   { yylval.node = new_node(yytext, 0); return RBracket; }
+";"   { yylval.node = new_node(yytext, 0); return Semicolon; }
+","   { yylval.node = new_node(yytext, 0); return Comma; }
 
 "//".*"\n"         { yylineno++; }
 "/*"(.|"\n")*"*\\" { yylineno++; }

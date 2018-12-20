@@ -11,6 +11,14 @@ void yyerror(char *s);
 %token <node> Class Public Static Void Main If Else While Extends
 %token <node> Integer Boolean String True False Id IntegerIteral
 %token <node> And This New Println Length Return 
+%type <node> Goal MainClass ExtendOpt Identifier
+%type <node> ClassDeclarations ClassDeclarationList ClassDeclaration
+%type <node> VarDeclarations VarDeclarationList VarDeclaration
+%type <node> MethodDeclarations MethodDeclarationList MethodDeclaration
+%type <node> TypeIdentifiers TypeIdentifierList TypeIdentifier
+%type <node> Statements StatementList Statement
+%type <node> Expressions ExpressionList Expression
+
 
 %right '='
 %left '.'

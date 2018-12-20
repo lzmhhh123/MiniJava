@@ -41,7 +41,7 @@ MainClass:
     Class Identifier Lbrace Public Static Void Main LBracket String Laccess Raccess Identifier RBracket Lbrace Statement Rbrace Rbrace
     {
         $$ = new_node("MainClass", 17, $1, $2, new_node("{", 0), $4, $5,
-                                       $6, $7, $8, $10, $11,
+                                       $6, $7, $8, $9, new_node("[", 0), $11,
                                        $12, $13, new_node("{", 0), $15, $16,
                                        $17);
     }
@@ -207,7 +207,7 @@ Type:
     }
 |   Integer Laccess Raccess
     {
-        $$ = new_node("Type", 3, $1, $2, $3);
+        $$ = new_node("Type", 3, $1, new_node("[", 0), $3);
     }
 |   Boolean
     {
@@ -245,7 +245,7 @@ Statement:
     }
 |   Identifier Laccess Expression Raccess '=' Expression Semicolon
     {
-        $$ = new_node("Statement", 7, $1, $2, $3, $4,
+        $$ = new_node("Statement", 7, $1, new_node("[", 0), $3, $4,
                                       new_node("=", 0), $6, $7);
     }
     ;
@@ -295,7 +295,7 @@ Expression:
     }
 |   Expression Laccess Expression Raccess
     {
-        $$ = new_node("Expression", 4, $1, $2, $3, $4);
+        $$ = new_node("Expression", 4, $1, new_node("[", 0), $3, $4);
     }
 |   Expression '.' Length
     {
@@ -324,7 +324,7 @@ Expression:
     }
 |   New Integer Laccess Expression Raccess
     {
-        $$ = new_node("Expression", 5, $1, $2, $3, $4, $5);
+        $$ = new_node("Expression", 5, $1, $2, new_node("[", 0), $4, $5);
     }
 |   New Identifier LBracket RBracket
     {

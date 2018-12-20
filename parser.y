@@ -19,11 +19,13 @@ void yyerror(char *s);
 %type <node> Statements StatementList Statement
 %type <node> Expressions ExpressionList Expression
 
-
 %right '='
 %left '.'
-%left '+', '-', '*'
-%left And, '<'
+%left '+'
+%left '-'
+%left '*'
+%left And
+%left '<'
 %right '!'
 
 %%
@@ -79,7 +81,7 @@ ExtendOpt:
     {
         $$ = NULL;
     }
-|   Extend Identifier
+|   Extends Identifier
     {
         $$ = new_node("ExtendOpt", 2, $1, $2);
     }

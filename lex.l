@@ -68,9 +68,9 @@ int yylineno;
 "<"   { return '<'; }
 "!"   { return '!'; }
 
-"{"   { yylval.node = new_node(yytext, 0); return Lbrace; }
+"{"   { return Lbrace; }
 "}"   { yylval.node = new_node(yytext, 0); return Rbrace; }
-"["   { yylval.node = new_node(yytext, 0); return Laccess; }
+"["   { return Laccess; }
 "]"   { yylval.node = new_node(yytext, 0); return Raccess; }
 "("   { yylval.node = new_node(yytext, 0); return LBracket; }
 ")"   { yylval.node = new_node(yytext, 0); return RBracket; }

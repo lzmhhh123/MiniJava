@@ -11,7 +11,7 @@ void yyerror(char *s);
 %token <node> Class Public Static Void Main If Else While Extends
 %token <node> Integer Boolean String True False Id IntegerIteral
 %token <node> And This New Println Length Return 
-%token <node> Lbrace Rbrace Raccess LBracket RBracket
+%token <node> Rbrace Raccess LBracket RBracket
 %token <node> Semicolon Comma
 %type <node> Goal MainClass ExtendOpt Identifier Type
 %type <node> ClassDeclarations ClassDeclarationList ClassDeclaration
@@ -21,7 +21,7 @@ void yyerror(char *s);
 %type <node> Statements StatementList Statement
 %type <node> Expressions ExpressionList Expression
 
-%left Laccess
+%left Laccess, Lbrace
 %right '='
 %left '.'
 %left '*'
@@ -40,9 +40,9 @@ Goal:
 MainClass:
     Class Identifier Lbrace Public Static Void Main LBracket String Laccess Raccess Identifier RBracket Lbrace Statement Rbrace Rbrace
     {
-        $$ = new_node("MainClass", 17, $1, $2, $3, $4, $5,
+        $$ = new_node("MainClass", 17, $1, $2, new_node("{", 0), $4, $5,
                                        $6, $7, $8, $10, $11,
-                                       $12, $13, $14, $15, $16,
+                                       $12, $13, new_node("{", 0), $15, $16,
                                        $17);
     }
     ;
@@ -72,7 +72,7 @@ ClassDeclarations:
 ClassDeclaration:
     Class Identifier ExtendOpt Lbrace VarDeclarations MethodDeclarations Rbrace
     {
-        $$ = new_node("ClassDeclaration", 7, $1, $2, $3, $4,
+        $$ = new_node("ClassDeclaration", 7, $1, $2, $3, new_node("{", 0),
                                              $5, $6, $7);
     }
     ;
@@ -143,7 +143,7 @@ MethodDeclaration:
     Public Type Identifier LBracket TypeIdentifiers RBracket Lbrace VarDeclarations Statements Rbrace Return Expression Semicolon Rbrace
     {
         $$ = new_node("MethodDeclaration", 14, $1, $2, $3, $4,
-                                               $5, $6, $7, $7,
+                                               $5, $6, new_node("{", 0),
                                                $8, $9, $10, $11,
                                                $12, $13, $14);
     }
@@ -222,7 +222,7 @@ Type:
 Statement:
     Lbrace Statements Rbrace
     {
-        $$ = new_node("Statement", 3, $1, $2, $3);
+        $$ = new_node("Statement", 3, new_node("{", 0), $2, $3);
     }
 |   If LBracket Expression RBracket Statement Else Statement
     {

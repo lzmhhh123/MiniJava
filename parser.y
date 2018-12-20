@@ -11,9 +11,9 @@ void yyerror(char *s);
 %token <node> Class Public Static Void Main If Else While Extends
 %token <node> Integer Boolean String True False Id IntegerIteral
 %token <node> And This New Println Length Return 
-%token <node> Lbrace, Rbrace, Laccess, Raccess, LBracket, RBracket
-%token <node> Semicolon, Comma
-%type <node> Goal MainClass ExtendOpt Identifier
+%token <node> Lbrace Rbrace Laccess Raccess LBracket RBracket
+%token <node> Semicolon Comma
+%type <node> Goal MainClass ExtendOpt Identifier Type
 %type <node> ClassDeclarations ClassDeclarationList ClassDeclaration
 %type <node> VarDeclarations VarDeclarationList VarDeclaration
 %type <node> MethodDeclarations MethodDeclarationList MethodDeclaration
@@ -23,11 +23,8 @@ void yyerror(char *s);
 
 %right '='
 %left '.'
-%left '+'
-%left '-'
-%left '*'
-%left And
-%left '<'
+%left '+' '-' '*'
+%left And '<'
 %right '!'
 
 %%
@@ -242,12 +239,12 @@ Statement:
     }
 |   Identifier '=' Expression Semicolon
     {
-        $$ = new_node("Statement", 4, $1, $2, $3, $4);
+        $$ = new_node("Statement", 4, $1, new_node("=", 0), $3, $4);
     }
 |   Identifier Laccess Expression Raccess '=' Expression Semicolon
     {
         $$ = new_node("Statement", 7, $1, $2, $3, $4,
-                                      $5, $6, $7);
+                                      new_node("=", 0), $6, $7);
     }
     ;
 
@@ -304,7 +301,7 @@ Expression:
     }
 |   Expression '.' Identifier LBracket Expressions RBracket
     {
-        $$ = new_node("Expression", 6, $1, new_node("<", 0), $3.
+        $$ = new_node("Expression", 6, $1, new_node(".", 0), $3.
                                        $4, $5, $6);
     }
 |   True
@@ -333,7 +330,7 @@ Expression:
     }
 |   '!' Expression
     {
-        $$ = new_node("Expression", 2, $1, $2);
+        $$ = new_node("Expression", 2, new_node("!", 0), $2);
     }
 |   LBracket Expression RBracket
     {

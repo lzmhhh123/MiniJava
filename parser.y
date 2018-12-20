@@ -15,7 +15,7 @@ void yyerror(char *s);
 %token <node> Semicolon Comma
 %type <node> Goal MainClass ExtendOpt Identifier Type
 %type <node> ClassDeclarations ClassDeclarationList ClassDeclaration
-%type <node> VarDeclarations VarDeclarationList VarDeclaration
+%type <node> VarDeclarations VarDeclaration
 %type <node> MethodDeclarations MethodDeclarationList MethodDeclaration
 %type <node> TypeIdentifiers TypeIdentifierList TypeIdentifier
 %type <node> Statements StatementList Statement
@@ -93,20 +93,9 @@ VarDeclarations:
     {
         $$ = NULL;
     }
-|   VarDeclarationList
+|   VarDeclarations VarDeclaration
     {
         $$ = new_node("VarDeclarations", 1, $1);
-    }
-    ;
-
-VarDeclarationList:
-    VarDeclaration
-    {
-        $$ = new_node("VarDeclarationList", 1, $1);
-    }
-|   VarDeclarationList VarDeclaration
-    {
-        $$ = new_node("VarDeclarationList", 2, $1, $2);
     }
     ;
 

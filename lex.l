@@ -23,6 +23,11 @@ int yylineno;
 "string"                      { yylval.node = new_node(yytext, 0); return String; }
 "true"                        { yylval.node = new_node(yytext, 0); return True; }
 "false"                       { yylval.node = new_node(yytext, 0); return False; }
+"this"                        { yylval.node = new_node(yytext, 0); return This; }
+"new"                         { yylval.node = new_node(yytext, 0); return New; }
+"System.out.println"          { yylval.node = new_node(yytext, 0); return Println; }
+"length"                      { yylval.node = new_node(yytext, 0); return Length; }
+"return"                      { yylval.node = new_node(yytext, 0); return Return; }
 [a-zA-Z]([a-zA-Z]|[0-9]|"_")* { 
                                 char *val = (char*)malloc(strlen("identifier: ")+strlen(yytext));
                                 sprint(val, "identifier: %s", val);
@@ -53,11 +58,6 @@ int yylineno;
                                 yylval.node = new_node(val, 0); 
                                 return IntegerIteral; 
                               }
-"this"                        { yylval.node = new_node(yytext, 0); return This; }
-"new"                         { yylval.node = new_node(yytext, 0); return New; }
-"System.out.println"          { yylval.node = new_node(yytext, 0); return Println; }
-"length"                      { yylval.node = new_node(yytext, 0); return Length; }
-"return"                      { yylval.node = new_node(yytext, 0); return Return; }
 
 "&&"  { return And; }
 "."   { return '.'; }

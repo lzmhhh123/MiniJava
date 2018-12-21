@@ -6,7 +6,7 @@
 
 struct Node* new_node(char *s, int children_size, ...) {
     struct Node *r = (struct Node*)malloc(sizeof(struct Node));
-    r->val = (char*)malloc(sizeof(s)+1);
+    r->val = (char*)malloc(strlen(s)+1);
     strcpy(r->val, s);
     r->children_size = children_size;
     r->children = (struct Node**)malloc(sizeof(struct Node*)*children_size);

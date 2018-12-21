@@ -34,11 +34,15 @@ void yyerror(char *s);
 %left And '<'
 %right '!'
 
+%start Goal
+
 %%
 Goal:
     MainClass ClassDeclarations 
     {
         $$ = new_node("Goal", 2, $1, $2);
+        printf("Syntax tree:\n");
+        DFS($$, 0);
     }
     ;
 
@@ -134,12 +138,12 @@ MethodDeclarationList:
     ;
 
 MethodDeclaration:
-    Public Type Identifier LBracket TypeIdentifiers RBracket Lbrace VarDeclarations Statements Rbrace Return Expression Semicolon Rbrace
+    Public Type Identifier LBracket TypeIdentifiers RBracket Lbrace VarDeclarations Statements Return Expression Semicolon Rbrace
     {
-        $$ = new_node("MethodDeclaration", 14, $1, $2, $3, $4,
+        $$ = new_node("MethodDeclaration", 13, $1, $2, $3, $4,
                                                $5, $6, new_node("{", 0),
                                                $8, $9, $10, $11,
-                                               $12, $13, $14);
+                                               $12, $13);
     }
     ;
 

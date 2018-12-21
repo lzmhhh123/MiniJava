@@ -5,5 +5,5 @@ MiniJava compiler built by yacc &amp; lex.
 sudo apt-get install bison flex
 yacc -d parser.y
 lex lexer.l
-gcc node.c parser.tab.c lexer.yy.c
+gcc node.c parser.tab.c lex.yy.c
 ```

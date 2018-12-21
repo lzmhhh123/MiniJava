@@ -3,9 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "node.h"
+#include "parser.tab.h"
 
 int yylineno;
 %}
+
+%option noyywrap
 
 %%
 "class"                       { yylval.node = new_node(yytext, 0); return Class; }
@@ -29,31 +32,31 @@ int yylineno;
 "return"                      { yylval.node = new_node(yytext, 0); return Return; }
 [a-zA-Z]([a-zA-Z]|[0-9]|"_")* { 
                                 char *val = (char*)malloc(strlen("identifier: ")+strlen(yytext));
-                                sprint(val, "identifier: %s", val);
+                                sprintf(val, "identifier: %s", val);
                                 yylval.node = new_node(val, 0);
                                 return Id;
                               }
 [1-9]([0-9])*                 { 
                                 char *val = (char*)malloc(strlen("IntegerIteral: ")+strlen(yytext));
-                                sprint(val, "IntegerIteral: %s", val);
+                                sprintf(val, "IntegerIteral: %s", val);
                                 yylval.node = new_node(val, 0); 
                                 return IntegerIteral;
                               }
 ("0x"|"0X")([0-9]|[a-fA-F])+  { 
                                 char *val = (char*)malloc(strlen("IntegerIteral: ")+strlen(yytext));
-                                sprint(val, "IntegerIteral: %s", val);
+                                sprintf(val, "IntegerIteral: %s", val);
                                 yylval.node = new_node(val, 0); 
                                 return IntegerIteral; 
                               }
 ("0b"|"0B")("0"|"1")+         { 
                                 char *val = (char*)malloc(strlen("IntegerIteral: ")+strlen(yytext));
-                                sprint(val, "IntegerIteral: %s", val);
+                                sprintf(val, "IntegerIteral: %s", val);
                                 yylval.node = new_node(val, 0); 
                                 return IntegerIteral; 
                               }
 "0"([0-8])+                   { 
                                 char *val = (char*)malloc(strlen("IntegerIteral: ")+strlen(yytext));
-                                sprint(val, "IntegerIteral: %s", val);
+                                sprintf(val, "IntegerIteral: %s", val);
                                 yylval.node = new_node(val, 0); 
                                 return IntegerIteral; 
                               }
@@ -80,6 +83,6 @@ int yylineno;
 "/*"(.|"\n")*"*\\" { yylineno++; }
 " "|"\t"|"\r"      { /*do nothing*/ }
 "\n"               { yylineno++; }
-.                  { yyerror("Unkown word."); }
+.                  { fprintf(stderr, "Unkown word."); }
 
 %%

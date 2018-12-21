@@ -4,9 +4,14 @@
 
 extern int yylineno;
 
-void yylex(void);
+int yylex();
 void yyerror(char *s);
 %}
+
+%union {
+    struct Node* node;
+    double d;
+}
 
 %token <node> Class Public Static Void Main If Else While Extends
 %token <node> Integer Boolean String True False Id IntegerIteral
@@ -292,7 +297,7 @@ Expression:
     }
 |   Expression '.' Identifier LBracket Expressions RBracket
     {
-        $$ = new_node("Expression", 6, $1, new_node(".", 0), $3.
+        $$ = new_node("Expression", 6, $1, new_node(".", 0), $3,
                                        $4, $5, $6);
     }
 |   True

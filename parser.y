@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "node.h"
 
-extend int yylineno;
+extern int yylineno;
 
 void yylex(void);
 void yyerror(char *s);

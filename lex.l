@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "node.h"
-#include "y.tab.h"
 
 int yylineno;
 %}

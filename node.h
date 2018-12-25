@@ -6,6 +6,7 @@
 struct Node {
     char *val;
     int children_size;
+    int line;
     struct Node **children;
 };
 

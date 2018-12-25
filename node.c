@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include "node.h"
+#include "parser.tab.h"
 
 struct Node* new_node(char *s, int children_size, ...) {
     struct Node *r = (struct Node*)malloc(sizeof(struct Node));
@@ -19,7 +20,7 @@ struct Node* new_node(char *s, int children_size, ...) {
     return r;
 }
 
-void DFS(struct Node *r, int level) {
+void Print(struct Node *r, int level) {
     if (r == NULL) {
         return;
     }
@@ -29,7 +30,138 @@ void DFS(struct Node *r, int level) {
     }
     printf("%s\n", r->val);
     for (i = 0; i < r->children_size; i++) {
-        DFS(r->children[i], level+1);
+        Print(r->children[i], level+1);
     }
     return;
+}
+
+// check semantics error
+int class_size = 0;
+struct Node **classes = NULL;
+
+void resolve_all_class(struct Node *goal) {
+    int class_size = 1;
+    struct Node *r = goal->children[1];
+    if (r != NULL) {
+        r = r->children[0];
+        class_size++;
+        while (r->children_size < 2) {
+            r = r->children[0];
+            class_size++;
+        }
+    }
+    classes = (struct Node**)malloc(sizeof(struct Node*) * class_size);
+    r = goal->children[1];
+    classes[0] = goal->children[0];
+    if (r != NULL) {
+        r = r->children[0];
+        int cnt = 1;
+        while (r->children_size < 2) {
+            classes[cnt] = r->children[1];
+            cnt++;
+            r = r->children[0];
+        }
+        classes[cnt] = r->children[0];
+    }
+}
+
+bool check_all_type(struct Node *r) {
+    if (strcmp(r->val, "Type") == 0 && r->children_size == 1) {
+        struct Node *id = r->children[0];
+        if (strcmp(id->val, "int") == 0 || strcmp(id->val, "boolean") == 0) {
+            return true;
+        }
+        int i;
+        for (i = 0; i < class_size; i++) {
+            if (strcmp(id->val, classes[i]->children[2]->val) == 0) {
+                return true;
+            }
+        }
+        fprintf(stderr, "line %d: no type called %s\n", id->line, id->val);
+        return false;
+    }
+    int i;
+    for (i = 0; i < r->children_size; i++) {
+        if (!check_all_type(r->children[i])) return false;
+    }
+    return true;
+}
+
+bool check_all_var_in_method(struct Node *statements, 
+                             struct Node *var_declarations_in_class,
+                             struct Node *type_identifiers,
+                             struct Node *var_declarations) {
+    if (statements == NULL) return true;
+    if (statements->children[0]->val[0] == 'i' && statements->children[0]->val[1] == 'd') {
+        struct Node *v = var_declarations_in_class;
+        while (v != NULL) {
+            struct Node *id = v->children[1]->children[1];
+            if (strcmp(id->val, statements->children[0]->val) == 0)
+                return true;
+            v = v->children[0];
+        }
+        if (type_identifiers != NULL) {
+            v = type_identifiers->children[0];
+            while (v->children_size == 2) {
+                struct Node *id = v->children[2]->children[1];
+                if (strcmp(id->val, statements->children[0]->val) == 0)
+                    return true;
+            }
+            struct Node *id = v->children[0]->children[1];
+            if (strcmp(id->val, statements->children[0]->val) == 0)
+                return true;
+        }
+        v = var_declarations;
+        while (v != NULL) {
+            struct Node *id = v->children[1]->children[1];
+            if (strcmp(id->val, statements->children[0]->val) == 0)
+                return true;
+            v = v->children[0];
+        }
+        fprintf(stderr, "line %d: no type called %s\n", 
+                statements->children[0]->line, 
+                statements->children[0]->val);
+        return false;
+    }
+    int i = 0;
+    for (; i < statements->children_size; i++) {
+        if (!check_all_var_in_method(statements->children[i]), 
+                                     var_declarations_in_class,
+                                     type_identifiers,
+                                     var_declarations) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool check_all_var(struct Node *class) {
+    struct Node *var_declarations_in_class = class->children[4];
+    struct Node *method = class->children[5];
+    if (method != NULL) {
+        while (method.children_size == 2) {
+            if (!check_all_var_in_method(method->children[1]->children[8], 
+                                         var_declarations_in_class, 
+                                         method->children[1]->children[4], 
+                                         method->children[1]->children[7]) 
+                return false;
+            method = method.children[0];
+        }
+        if (!check_all_var_in_method(method->children[0]->children[8], 
+                                     var_declarations_in_class, 
+                                     method->children[0]->children[4],
+                                     method->children[0]->children[7]))
+            return false;
+    }
+    return true;
+}
+
+bool check(struct Node *goal) {
+    resolve_all_class(goal);
+    if (!check_all_type(goal)) return false;
+    int i;
+    for (i = 1; i < class_size; i++) {
+        if (!check_all_var(classes[i])) return false;
+    }
+    return true;
 }

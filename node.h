@@ -12,5 +12,6 @@ struct Node {
 
 struct Node* new_node(char *s, int children_size, ...);
 
-void DFS(struct Node *r, int level);
+void Print(struct Node *r, int level);
 
+int check(struct Node *r);

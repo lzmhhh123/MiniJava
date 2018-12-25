@@ -65,39 +65,39 @@ void resolve_all_class(struct Node *goal) {
     }
 }
 
-bool check_all_type(struct Node *r) {
+int check_all_type(struct Node *r) {
     if (strcmp(r->val, "Type") == 0 && r->children_size == 1) {
         struct Node *id = r->children[0];
-        if (strcmp(id->val, "int") == 0 || strcmp(id->val, "boolean") == 0) {
-            return true;
+        if (strcmp(id->val, "int") == 0 || strcmp(id->val, "intean") == 0) {
+            return 1;
         }
         int i;
         for (i = 0; i < class_size; i++) {
             if (strcmp(id->val, classes[i]->children[2]->val) == 0) {
-                return true;
+                return 1;
             }
         }
         fprintf(stderr, "line %d: no type called %s\n", id->line, id->val);
-        return false;
+        return 0;
     }
     int i;
     for (i = 0; i < r->children_size; i++) {
-        if (!check_all_type(r->children[i])) return false;
+        if (!check_all_type(r->children[i])) return 0;
     }
-    return true;
+    return 1;
 }
 
-bool check_all_var_in_method(struct Node *statements, 
+int check_all_var_in_method(struct Node *statements, 
                              struct Node *var_declarations_in_class,
                              struct Node *type_identifiers,
                              struct Node *var_declarations) {
-    if (statements == NULL) return true;
+    if (statements == NULL) return 1;
     if (statements->children[0]->val[0] == 'i' && statements->children[0]->val[1] == 'd') {
         struct Node *v = var_declarations_in_class;
         while (v != NULL) {
             struct Node *id = v->children[1]->children[1];
             if (strcmp(id->val, statements->children[0]->val) == 0)
-                return true;
+                return 1;
             v = v->children[0];
         }
         if (type_identifiers != NULL) {
@@ -105,63 +105,63 @@ bool check_all_var_in_method(struct Node *statements,
             while (v->children_size == 2) {
                 struct Node *id = v->children[2]->children[1];
                 if (strcmp(id->val, statements->children[0]->val) == 0)
-                    return true;
+                    return 1;
             }
             struct Node *id = v->children[0]->children[1];
             if (strcmp(id->val, statements->children[0]->val) == 0)
-                return true;
+                return 1;
         }
         v = var_declarations;
         while (v != NULL) {
             struct Node *id = v->children[1]->children[1];
             if (strcmp(id->val, statements->children[0]->val) == 0)
-                return true;
+                return 1;
             v = v->children[0];
         }
         fprintf(stderr, "line %d: no type called %s\n", 
                 statements->children[0]->line, 
                 statements->children[0]->val);
-        return false;
+        return 0;
     }
     int i = 0;
     for (; i < statements->children_size; i++) {
-        if (!check_all_var_in_method(statements->children[i]), 
+        if (!check_all_var_in_method(statements->children[i], 
                                      var_declarations_in_class,
                                      type_identifiers,
-                                     var_declarations) {
-            return false;
+                                     var_declarations)) {
+            return 0;
         }
     }
-    return true;
+    return 1;
 }
 
-bool check_all_var(struct Node *class) {
+int check_all_var(struct Node *class) {
     struct Node *var_declarations_in_class = class->children[4];
     struct Node *method = class->children[5];
     if (method != NULL) {
-        while (method.children_size == 2) {
+        while (method->children_size == 2) {
             if (!check_all_var_in_method(method->children[1]->children[8], 
                                          var_declarations_in_class, 
                                          method->children[1]->children[4], 
-                                         method->children[1]->children[7]) 
-                return false;
-            method = method.children[0];
+                                         method->children[1]->children[7])) 
+                return 0;
+            method = method->children[0];
         }
         if (!check_all_var_in_method(method->children[0]->children[8], 
                                      var_declarations_in_class, 
                                      method->children[0]->children[4],
                                      method->children[0]->children[7]))
-            return false;
+            return 0;
     }
-    return true;
+    return 1;
 }
 
-bool check(struct Node *goal) {
+int check(struct Node *goal) {
     resolve_all_class(goal);
-    if (!check_all_type(goal)) return false;
+    if (!check_all_type(goal)) return 0;
     int i;
     for (i = 1; i < class_size; i++) {
-        if (!check_all_var(classes[i])) return false;
+        if (!check_all_var(classes[i])) return 0;
     }
-    return true;
+    return 1;
 }

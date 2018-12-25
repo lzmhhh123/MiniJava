@@ -42,7 +42,8 @@ Goal:
     {
         $$ = new_node("Goal", 2, $1, $2);
         $$->line = yylineno;
-        if (check($$))) {
+        //if (check($$)) 
+        {
             printf("Syntax tree:\n");
             Print($$, 0);
         }

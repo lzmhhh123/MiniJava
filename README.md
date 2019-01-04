@@ -1,6 +1,7 @@
 # MiniJava
 MiniJava compiler built by yacc &amp; lex.
 
+## Usage
 ```bash
 sudo apt-get install bison flex
 yacc -d parser.y
